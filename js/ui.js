@@ -1,30 +1,41 @@
 /*
-  ui.js
-  -----
-  Responsabilidad:
-  - Manipular el DOM
-  - Mostrar datos al usuario
+  ui.js - Gestión del DOM
 */
 
-export function renderWeather(data) {
-  const result = document.getElementById('weatherResult');
+const loader = document.getElementById('loader');
+const resultContainer = document.getElementById('weatherResult');
 
-  // Limpiar contenido previo
-  result.innerHTML = '';
+export function showLoader() {
+  loader.classList.remove('hidden');
+  resultContainer.innerHTML = ''; // Limpiar resultado previo
+}
 
-  if (!data) {
-    result.innerHTML = `
-      <p class="weather__result--error">
-        Ciudad no encontrada
-      </p>
-    `;
-    return;
-  }
+export function hideLoader() {
+  loader.classList.add('hidden');
+}
 
-  const weather = data.current_weather;
+export function showError(message) {
+  resultContainer.innerHTML = `
+    <p class="weather__result--error">⚠️ ${message}</p>
+  `;
+}
 
-  result.innerHTML = `
-    <h2>${weather.temperature}°C</h2>
-    <p>Viento: ${weather.windspeed} km/h</p>
+export function renderWeather(weatherObject) {
+  // Desestructuramos los datos que armamos en api.js
+  const { name, country, data } = weatherObject;
+  const { temperature, windspeed } = data;
+
+  // Lógica de colores (Guard Clauses)
+  let tempClass = '';
+  if (temperature <= 15) tempClass = 'weather__temp--cold';
+  if (temperature > 25) tempClass = 'weather__temp--hot';
+
+  // Inyectar HTML
+  resultContainer.innerHTML = `
+    <h2>${name}, ${country}</h2>
+    <div class="weather__temp ${tempClass}">
+      ${temperature}°C
+    </div>
+    <p>Viento: ${windspeed} km/h</p>
   `;
 }

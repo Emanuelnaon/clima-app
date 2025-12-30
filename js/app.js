@@ -1,60 +1,58 @@
 /*
-  app.js
-  ------
-  Controlador principal
-  Conecta la UI con la API
+  app.js - Controlador Principal
 */
-// Normaliza texto para evitar búsquedas duplicadas
-function normalizeCity(text) {
-  return text
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, ' ');
-}
+import { getWeatherByCity } from './api.js';
+import { showLoader, hideLoader, renderWeather, showError } from './ui.js';
 
-let lastCity = '';/* Última ciudad buscada */
-
-
-
-
-// Referencias al DOM
+// Elementos del DOM
 const searchBtn = document.getElementById('searchBtn');
 const cityInput = document.getElementById('cityInput');
 
-// Evento principal
-searchBtn.addEventListener('click', async () => {
+// Estado
+let lastCity = '';
+
+// Utilidad para limpiar texto
+function normalizeCity(text) {
+  return text.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+// Lógica principal
+async function handleSearch() {
   const city = normalizeCity(cityInput.value);
 
-  // 1️⃣ Validar input vacío
-  if (!city) return;
-
-  // 2️⃣ Evitar búsqueda repetida
-  if (city === lastCity) {
-    searchBtn.disabled = false;
+  // Validaciones iniciales
+  if (!city) {
+    showError("Por favor ingresá una ciudad.");
     return;
   }
-// Actualizar última ciudad buscada
+  if (city === lastCity) return; // Evitar búsqueda repetida
+
+  // Preparar interfaz
   lastCity = city;
-  // 3️⃣ Bloquear botón
   searchBtn.disabled = true;
-  // 4️⃣ Mostrar loader
   showLoader();
 
-try {
-    const weatherData = await getWeatherByCity(city);
-    renderWeather(weatherData);
+  try {
+    const result = await getWeatherByCity(city);
+
+    if (!result) {
+      showError("Ciudad no encontrada.");
+    } else {
+      renderWeather(result);
+    }
+
   } catch (error) {
-    showError('No se pudo obtener el clima');
+    showError("Error de conexión. Intentalo más tarde.");
   } finally {
-      hideLoader();
-      searchBtn.disabled = false;
+    // Restaurar interfaz
+    hideLoader();
+    searchBtn.disabled = false;
   }
-});
+}
 
-/* Habilitar búsqueda al presionar Enter */
+// Event Listeners
+searchBtn.addEventListener('click', handleSearch);
+
 cityInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    searchBtn.click();/* Simular click en el botón de búsqueda */
-  }
+  if (e.key === 'Enter') handleSearch();
 });
-
