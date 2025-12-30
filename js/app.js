@@ -15,8 +15,7 @@ function normalizeCity(text) {
 let lastCity = '';/* Última ciudad buscada */
 
 
-import { getWeatherByCity } from './api.js';/* Importar funciones de UI */
-import { renderWeather } from './ui.js';/* Importar funciones de UI */
+
 
 // Referencias al DOM
 const searchBtn = document.getElementById('searchBtn');
@@ -47,7 +46,8 @@ try {
   } catch (error) {
     showError('No se pudo obtener el clima');
   } finally {
-    searchBtn.disabled = false;
+      hideLoader();
+      searchBtn.disabled = false;
   }
 });
 
