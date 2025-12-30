@@ -16,10 +16,9 @@ body {
 
 /* BLOQUE WEATHER */
 .weather {
-  width: 100%;
-  max-width: 420px;
-  margin: auto;
-  padding: 1.5rem;
+  width: 90%; /* En móviles pequeños ocupa casi todo */
+  max-width: 400px; /* En desktops no se estira infinito */
+  margin: 2rem auto;
 }
 
 .weather__title {
@@ -86,4 +85,40 @@ body {
 /* UTILIDADES */
 .hidden {
   display: none !important;
+}
+
+/* Estilos para el pronóstico extendido */
+.weather__forecast {
+  margin-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1rem;
+}
+
+.weather__day {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.weather__update {
+  font-size: 0.75rem;
+  opacity: 0.5;
+  margin-top: 1rem;
+}
+
+/* css/main.css */
+.weather__geo-link {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: #38bdf8;
+  cursor: pointer;
+  text-decoration: underline;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.weather__geo-link:hover {
+  opacity: 1;
 }
