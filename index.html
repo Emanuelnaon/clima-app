@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>App del Clima</title>
+
+  <!-- CSS principal -->
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+  <!-- Bloque principal (BEM) -->
+  <main class="weather">
+
+    <!-- Título -->
+    <h1 class="weather__title">Clima</h1>
+
+    <!-- Input de búsqueda -->
+    <input
+      type="text"
+      class="weather__input"
+      id="cityInput"
+      placeholder="Ingresá una ciudad"
+    />
+
+    <!-- Botón -->
+    <button class="weather__button" id="searchBtn">
+      Buscar
+    </button>
+
+    <!-- Resultado del clima -->
+    <section class="weather__result" id="weatherResult">
+      <!-- El JS inyecta contenido acá -->
+    </section>
+
+  </main>
+
+  <!-- JS principal (módulo) -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
