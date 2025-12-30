@@ -11,18 +11,19 @@
   <main class="weather">
     <h1 class="weather__title">Clima</h1>
 
-    <input
-      type="text"
-      class="weather__input"
-      id="cityInput"
-      placeholder="Ingresá una ciudad (ej: Madrid)"
-    />
-
-    <div id="loader" class="loader hidden"></div>
-
-    <button class="weather__button" id="searchBtn">Buscar</button>
+    <div class="weather__search">
+      <input
+        type="text"
+        class="weather__input"
+        id="cityInput"
+        placeholder="Ingresá una ciudad (ej: Mendoza)"
+      />
+      <button class="weather__button" id="searchBtn">Buscar</button>
+    </div>
 
     <p class="weather__geo-link" id="geoBtn">📍 Usar mi ubicación actual</p>
+
+    <div id="loader" class="loader hidden"></div>
 
     <section class="weather__result" id="weatherResult">
       <p class="weather__hint">
