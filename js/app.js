@@ -4,21 +4,33 @@ import { renderWeather, showLoader, hideLoader, showError } from './ui.js';
 
 const searchBtn = document.getElementById('searchBtn');
 const cityInput = document.getElementById('cityInput');
-let lastCity = '';
+const geoBtn = document.getElementById('geoBtn');
 
-// --- NUEVO: Función para ejecutar la búsqueda ---
+// --- Función Principal de Búsqueda ---
 async function performSearch(city = null, coords = null) {
+  // Evitar búsquedas vacías si el botón se presiona rápido
+  searchBtn.disabled = true;
   showLoader();
+
   try {
     const data = await getWeather(city, coords);
+    
     if (!data) {
-      showError("Ciudad no encontrada");
+      showError("No se encontró la ubicación");
     } else {
+      // Intentamos renderizar. Si falla un icono, ui.js ahora es más robusto.
       renderWeather(data);
-      if (city) lastCity = city; // Guardamos para la actualización automática
+      
+      // Guardar en memoria solo si es búsqueda por nombre exitosa
+      if (city) {
+        localStorage.setItem('weather_last_city', city);
+      }
     }
   } catch (error) {
-    showError("Error de conexión");
+    // Imprimimos el error real en consola para que tú lo veas, 
+    // pero al usuario le damos un mensaje claro.
+    console.error("Error en la búsqueda:", error);
+    showError("No se pudo obtener el clima. Revisa tu conexión.");
   } finally {
     hideLoader();
     searchBtn.disabled = false;
@@ -27,40 +39,45 @@ async function performSearch(city = null, coords = null) {
 
 // --- EVENTOS ---
 
-// 1. Click en buscar
-searchBtn.addEventListener('click', () => {
-  const city = cityInput.value.trim();
-  if (city) performSearch(city);
+// 1. Carga inicial: Prioriza LocalStorage
+window.addEventListener('load', () => {
+  const savedCity = localStorage.getItem('weather_last_city');
+  if (savedCity) {
+    performSearch(savedCity);
+  }
 });
 
-// 2. Geolocalización automática al cargar la página
-/* Ubicación: js/app.js */
+// 2. Búsqueda manual
+searchBtn.addEventListener('click', () => {
+  const city = cityInput.value.trim();
+  if (city) {
+    performSearch(city);
+    cityInput.value = ''; // Limpia el input después de buscar
+  }
+});
 
-const geoBtn = document.getElementById('geoBtn');
+// 3. Soporte para tecla "Enter" (Mejora de UX)
+cityInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    const city = cityInput.value.trim();
+    if (city) performSearch(city);
+  }
+});
 
-// Escuchar el clic en el nuevo botón de ubicación
+// 4. Geolocalización
 geoBtn.addEventListener('click', () => {
   if (navigator.geolocation) {
-    showLoader(); // Mostramos que estamos trabajando
+    // Notificamos que estamos obteniendo coordenadas
+    showLoader(); 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const coords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
         performSearch(null, coords);
       },
-      (error) => {
+      (err) => {
         hideLoader();
-        showError("No se pudo acceder a tu ubicación");
+        showError("Acceso a ubicación denegado");
       }
     );
-  } else {
-    showError("Tu navegador no soporta geolocalización");
   }
 });
-
-// 3. Actualización en tiempo real (cada 15 minutos)
-setInterval(() => {
-  if (lastCity) {
-    console.log("Actualizando datos...");
-    performSearch(lastCity);
-  }
-}, 15 * 60 * 1000);

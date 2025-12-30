@@ -1,78 +1,80 @@
 /* Ubicación: js/ui.js */
 
-// Referencias a elementos del DOM
 const loader = document.getElementById('loader');
 const resultContainer = document.getElementById('weatherResult');
 
-/**
- * Muestra el spinner de carga y limpia el resultado previo
- */
 export function showLoader() {
   if (loader) loader.classList.remove('hidden');
   if (resultContainer) resultContainer.innerHTML = ''; 
 }
 
-/**
- * Oculta el spinner de carga
- */
 export function hideLoader() {
   if (loader) loader.classList.add('hidden');
 }
 
-/**
- * Muestra mensajes de error al usuario
- */
 export function showError(message) {
-  resultContainer.innerHTML = `
-    <p class="weather__result--error">⚠️ ${message}</p>
-  `;
+  resultContainer.innerHTML = `<p class="weather__result--error">⚠️ ${message}</p>`;
 }
 
 /**
- * Renderiza el clima actual y dispara el renderizado del pronóstico
+ * Mapeo de códigos de clima a iconos y textos
  */
+function getWeatherConfig(code) {
+  const mapping = {
+    0: { icon: 'clear.svg', text: 'Cielo despejado' },
+    1: { icon: 'clear.svg', text: 'Mayormente soleado' },
+    2: { icon: 'cloudy.svg', text: 'Parcialmente nublado' },
+    3: { icon: 'cloudy.svg', text: 'Nublado' },
+    45: { icon: 'fog.svg', text: 'Niebla' },
+    48: { icon: 'fog.svg', text: 'Niebla con escarcha' },
+    51: { icon: 'rain.svg', text: 'Llovizna leve' },
+    53: { icon: 'rain.svg', text: 'Llovizna moderada' },
+    61: { icon: 'rain.svg', text: 'Lluvia leve' },
+    63: { icon: 'rain.svg', text: 'Lluvia moderada' },
+    71: { icon: 'snow.svg', text: 'Nieve ligera' },
+    95: { icon: 'storm.svg', text: 'Tormenta eléctrica' },
+  };
+  return mapping[code] || { icon: 'unknown.svg', text: 'Clima' };
+}
+
 export function renderWeather(data) {
-  const { temperature, windspeed } = data.current_weather;
-  const { cityName, daily } = data;
+  try {
+    const { temperature, windspeed, weathercode } = data.current_weather;
+    const { cityName, daily } = data;
+    const config = getWeatherConfig(weathercode);
+    const ahora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  // Tiempo Real: Hora de actualización
-  const ahora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    resultContainer.innerHTML = `
+      <h2 class="weather__city">${cityName}</h2>
+      <img src="assets/icons/${config.icon}" alt="${config.text}" class="weather__main-icon" onerror="this.src='assets/icons/clear.svg'">
+      <div class="weather__temp">${Math.round(temperature)}°C</div>
+      <p class="weather__description">${config.text}</p>
+      <p class="weather__info">Viento: ${windspeed} km/h</p>
+      <p class="weather__update">Actualizado a las: ${ahora}</p>
+      <div class="weather__forecast" id="forecastContainer"></div>
+    `;
 
-  // Determinamos clase de temperatura (BEM)
-  let tempClass = '';
-  if (temperature <= 15) tempClass = 'weather__temp--cold';
-  if (temperature > 25) tempClass = 'weather__temp--hot';
-
-  resultContainer.innerHTML = `
-    <h2 class="weather__city">${cityName}</h2>
-    <div class="weather__temp ${tempClass}">${Math.round(temperature)}°C</div>
-    <p class="weather__info">Viento: ${windspeed} km/h</p>
-    <p class="weather__update">Actualizado a las: ${ahora}</p>
-    
-    <div class="weather__forecast" id="forecastContainer">
-      </div>
-  `;
-
-  // Llamamos a la función interna para los 5 días
-  renderForecast(daily);
+    renderForecast(daily);
+  } catch (error) {
+    console.error("Error en renderWeather:", error);
+    showError("Error al mostrar los datos");
+  }
 }
 
-/**
- * Genera las filas del pronóstico extendido
- */
 function renderForecast(daily) {
   const forecastContainer = document.getElementById('forecastContainer');
   let html = '';
 
-  // Recorremos del día 1 al 5 (mañana a 5 días vista)
   for (let i = 1; i <= 5; i++) {
     const fecha = new Date(daily.time[i]).toLocaleDateString('es', { weekday: 'short' });
     const max = Math.round(daily.temperature_2m_max[i]);
     const min = Math.round(daily.temperature_2m_min[i]);
+    const config = getWeatherConfig(daily.weathercode[i]);
 
     html += `
       <div class="weather__day">
         <span class="weather__day-name">${fecha}</span>
+        <img src="assets/icons/${config.icon}" class="weather__day-icon" alt="${config.text}" onerror="this.src='assets/icons/clear.svg'">
         <span class="weather__day-temps"><strong>${max}°</strong> / ${min}°</span>
       </div>
     `;

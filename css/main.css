@@ -122,3 +122,77 @@ body {
 .weather__geo-link:hover {
   opacity: 1;
 }
+
+/* css/main.css */
+.weather__main-icon {
+  width: 80px;
+  height: 80px;
+  margin: 1rem auto;
+  display: block;
+}
+
+.weather__day-icon-img {
+  width: 30px;
+  height: 30px;
+}
+
+.weather__main-icon {
+    width: 100px;
+    height: 100px;
+}
+
+.weather__day {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Alinea verticalmente texto e icono */
+  padding: 0.8rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.weather__day-icon-img {
+  display: block;
+  margin: 0 auto; /* Centra el icono en el espacio disponible */
+}
+
+/* Ubicación: css/main.css */
+
+/* Estilos para el Icono Principal */
+.weather__main-icon {
+    width: 120px; /* Tamaño grande para el clima actual */
+    height: auto;
+    margin: 1rem auto;
+    display: block;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+}
+
+/* Estilos para la lista del pronóstico */
+.weather__forecast {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.weather__day {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+/* --- CONFIGURACIÓN GLOBAL DE TAMAÑO PARA PRONÓSTICO --- */
+.weather__day-icon {
+    width: 32px;  /* Cambia este número para agrandar todos los del pronóstico */
+    height: 32px;
+    object-fit: contain;
+    opacity: 0.9;
+}
+
+.weather__day-name {
+    width: 50px;
+    text-transform: capitalize;
+}
+
+.weather__day-temps {
+    width: 80px;
+    text-align: right;
+}
