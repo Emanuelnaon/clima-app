@@ -65,10 +65,19 @@ cityInput.addEventListener('keypress', (e) => {
 });
 
 // 4. Geolocalización
+/* Reemplaza la sección de Geolocalización en js/app.js */
+
 geoBtn.addEventListener('click', () => {
   if (navigator.geolocation) {
-    // Notificamos que estamos obteniendo coordenadas
     showLoader(); 
+
+    // OPCIONES DE TIEMPO
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 6000, // 6 segundos máximo
+      maximumAge: 0
+    };
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const coords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
@@ -76,8 +85,15 @@ geoBtn.addEventListener('click', () => {
       },
       (err) => {
         hideLoader();
-        showError("Acceso a ubicación denegado");
-      }
+        if (err.code === 3) { // 3 es el código de Timeout
+           showError("El GPS tardó demasiado. Prueba buscando por nombre.");
+        } else {
+           showError("Acceso a ubicación denegado o error de señal.");
+        }
+      },
+      options // <-- IMPORTANTE pasar las opciones aquí
     );
+  } else {
+    showError("Tu navegador no soporta geolocalización");
   }
 });
